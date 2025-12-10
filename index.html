@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Enquiry System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .view {
+            display: none;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .container.narrow {
+            max-width: 450px;
+        }
+
+        .container.wide {
+            max-width: 1200px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-primary:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        .btn-link:hover {
+            color: #2980b9;
+        }
+
+        .success-message {
+            background: #2ecc71;
+            color: white;
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .staff-login {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: #3498db;
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .enquiries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .enquiry-card {
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 20px;
+            transition: box-shadow 0.3s;
+        }
+
+        .enquiry-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .enquiry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .enquiry-header h3 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .enquiry-header .meta {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-new {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-contacted {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-closed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .enquiry-body h4 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .enquiry-body p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .enquiry-body .date {
+            color: #95a5a6;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+        .enquiry-actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .loading,
+        .empty-state,
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .error {
+            color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .enquiry-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn-secondary {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Public Enquiry Form -->
+    <div id="publicView" class="view active">
+        <div class="container">
+            <div class="header">
+                <h1>Contact Us</h1>
+                <p>Submit your enquiry and we'll get back to you soon</p>
+            </div>
+            
+            <form id="enquiryForm" class="enquiry-form">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject *</label>
+                    <input type="text" id="subject" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message *</label>
+                    <textarea id="message" rows="5" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Submit Enquiry</button>
+            </form>
+            
+            <div id="successMessage" class="success-message" style="display: none;">
+                <p>✓ Your enquiry has been submitted successfully! We'll contact you soon.</p>
+            </div>
+            
+            <div class="staff-login">
+                <button id="staffLoginBtn" class="btn-link">Staff Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Login -->
+    <div id="loginView" class="view">
+        <div class="container narrow">
+            <div class="header">
+                <h1>Staff Login</h1>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="button" id="backToPublic" class="btn btn-secondary">Back</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Staff Dashboard -->
+    <div id="staffView" class="view">
+        <div class="container wide">
+            <div class="header">
+                <h1>Enquiry Inbox</h1>
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+            
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="new">New</button>
+                <button class="filter-btn" data-filter="contacted">Contacted</button>
+                <button class="filter-btn" data-filter="closed">Closed</button>
+            </div>
+            
+            <div id="enquiriesList" class="enquiries-list">
+                <div class="loading">Loading enquiries...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        // REPLACE THESE VALUES WITH YOUR OWN FIREBASE PROJECT CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzngl0TI8tcMP3W2i2AUYqtBp5nCFGHkY",
+            authDomain: "customer-enquiry-inbox-1a113.firebaseapp.com",
+            projectId: "customer-enquiry-inbox-1a113",
+            storageBucket: "customer-enquiry-inbox-1a113.firebasestorage.app",
+            messagingSenderId: "269813008504",
+            appId: "1:269813008504:web:5969c5e659afd38477c58d"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // DOM Elements
+        const views = {
+            public: document.getElementById('publicView'),
+            login: document.getElementById('loginView'),
+            staff: document.getElementById('staffView')
+        };
+
+        const forms = {
+            enquiry: document.getElementById('enquiryForm'),
+            login: document.getElementById('loginForm')
+        };
+
+        // State
+        let currentFilter = 'all';
+        let unsubscribeEnquiries = null;
+
+        // View Management
+        function showView(viewName) {
+            Object.values(views).forEach(v => v.classList.remove('active'));
+            views[viewName].classList.add('active');
+        }
+
+        // Public Enquiry Form Submission
+        forms.enquiry.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            
+            try {
+                const enquiry = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value || '',
+                    subject: document.getElementById('subject').value,
+                    message: document.getElementById('message').value,
+                    status: 'new',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('enquiries').add(enquiry);
+                
+                forms.enquiry.reset();
+                document.getElementById('successMessage').style.display = 'block';
+                
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 5000);
+                
+            } catch (error) {
+                alert('Error submitting enquiry: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submit Enquiry';
+            }
+        });
+
+        // Navigation
+        document.getElementById('staffLoginBtn').addEventListener('click', () => {
+            showView('login');
+        });
+
+        document.getElementById('backToPublic').addEventListener('click', () => {
+            showView('public');
+        });
+
+        // Staff Login
+        forms.login.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                showView('staff');
+                loadEnquiries();
+                forms.login.reset();
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                if (unsubscribeEnquiries) {
+                    unsubscribeEnquiries();
+                }
+                showView('public');
+            } catch (error) {
+                alert('Logout failed: ' + error.message);
+            }
+        });
+
+        // Filter Buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                loadEnquiries();
+            });
+        });
+
+        // Load Enquiries with Real-time Updates
+        function loadEnquiries() {
+            const list = document.getElementById('enquiriesList');
+            list.innerHTML = '<div class="loading">Loading enquiries...</div>';
+            
+            if (unsubscribeEnquiries) {
+                unsubscribeEnquiries();
+            }
+            
+            let query = db.collection('enquiries').orderBy('createdAt', 'desc');
+            
+            if (currentFilter !== 'all') {
+                query = query.where('status', '==', currentFilter);
+            }
+            
+            unsubscribeEnquiries = query.onSnapshot((snapshot) => {
+                if (snapshot.empty) {
+                    list.innerHTML = '<div class="empty-state">No enquiries found</div>';
+                    return;
+                }
+                
+                list.innerHTML = '';
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const card = createEnquiryCard(doc.id, data);
+                    list.appendChild(card);
+                });
+            }, (error) => {
+                list.innerHTML = '<div class="error">Error loading enquiries: ' + error.message + '</div>';
+            });
+        }
+
+        // Create Enquiry Card
+        function createEnquiryCard(id, data) {
+            const card = document.createElement('div');
+            card.className = 'enquiry-card';
+            card.dataset.status = data.status;
+            
+            const date = data.createdAt ? data.createdAt.toDate().toLocaleString() : 'Just now';
+            
+            card.innerHTML = `
+                <div class="enquiry-header">
+                    <div>
+                        <h3>${escapeHtml(data.name)}</h3>
+                        <p class="meta">${escapeHtml(data.email)} ${data.phone ? '• ' + escapeHtml(data.phone) : ''}</p>
+                    </div>
+                    <span class="status-badge status-${data.status}">${data.status}</span>
+                </div>
+                <div class="enquiry-body">
+                    <h4>${escapeHtml(data.subject)}</h4>
+                    <p>${escapeHtml(data.message)}</p>
+                    <p class="date">Submitted: ${date}</p>
+                </div>
+                <div class="enquiry-actions">
+                    ${data.status === 'new' ? `
+                        <button class="btn btn-small btn-primary" onclick="updateStatus('${id}', 'contacted')">Mark as Contacted</button>
+                    ` : ''}
+                    ${data.status === 'contacted' ? `
+                        <button class="btn btn-small btn-primary" onclick="updateStatus('${id}', 'closed')">Mark as Closed</button>
+                    ` : ''}
+                    ${data.status !== 'new' ? `
+                        <button class="btn btn-small btn-secondary" onclick="updateStatus('${id}', 'new')">Reopen</button>
+                    ` : ''}
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Update Enquiry Status
+        async function updateStatus(id, status) {
+            try {
+                await db.collection('enquiries').doc(id).update({
+                    status: status,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                alert('Error updating status: ' + error.message);
+            }
+        }
+
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Check Auth State
+        auth.onAuthStateChanged((user) => {
+            if (user && views.staff.classList.contains('active')) {
+                loadEnquiries();
+            }
+        });
+
+        // Make updateStatus available globally
+        window.updateStatus = updateStatus;
+    </script>
+</body>
+</html>
